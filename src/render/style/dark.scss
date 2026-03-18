@@ -1,0 +1,418 @@
+html.dark {
+  --main-panel-bg-color: #282b3d;
+
+  .el-card {
+    --el-card-bg-color: var(--main-panel-bg-color);
+  }
+  .el-table {
+    --el-table-bg-color: var(--main-panel-bg-color);
+    --el-table-tr-bg-color: var(--main-panel-bg-color);
+    --el-table-header-bg-color: var(--main-panel-bg-color);
+  }
+  .el-table-v2 {
+    --el-bg-color: var(--main-panel-bg-color);
+  }
+  .el-drawer {
+    background: #1d2033 !important;
+    background-color: #1d2033 !important;
+
+    .el-drawer__body {
+      background: #1d2033 !important;
+      padding: 0 !important;
+
+      .host-vhost {
+        background: #1d2033;
+
+        .nav {
+          background: #282b3d;
+          height: 55px;
+        }
+      }
+
+      .host-edit {
+        background: #1d2033;
+        .nav {
+          background: #282b3d;
+        }
+        .main-wapper {
+          color: rgba(255, 255, 255, 0.7);
+
+          .main {
+            background: #32364a;
+          }
+
+          .input,
+          .input-textarea {
+            color: #fff;
+            &::-webkit-input-placeholder {
+              color: rgba(255, 255, 255, 0.7);
+            }
+          }
+          .input {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+
+            &:hover {
+              border-bottom: 2px solid rgba(255, 255, 255, 0.7);
+            }
+            &:focus {
+              border-bottom: 2px solid #01cc74;
+            }
+            &.error {
+              border-bottom: 2px solid #cc5441;
+            }
+          }
+          .input-textarea {
+            border: 1px solid rgba(255, 255, 255, 0.7);
+
+            &:hover {
+              border: 2px solid rgba(255, 255, 255, 0.7);
+            }
+            &:focus {
+              border: 2px solid #01cc74;
+            }
+            &.error {
+              border: 2px solid #cc5441;
+            }
+          }
+          .el-select {
+            &.error {
+              .el-input__wrapper {
+                border: 1px solid #cc5441;
+              }
+            }
+          }
+        }
+      }
+
+      .host-logs {
+        background: #1d2033;
+        > .top-tab {
+          > li {
+            &:hover {
+              background-color: #3e4257;
+            }
+            &.active {
+              background: #3e4257;
+            }
+          }
+        }
+      }
+
+      .php-extensions {
+        background: #1d2033;
+        .nav {
+          background: #282b3d;
+        }
+      }
+
+      .tools-file-info {
+        .main-wapper {
+          .select-dir-wapper {
+            #selectDir {
+              border: 2px dashed #ccc;
+              color: #fff;
+            }
+          }
+        }
+      }
+    }
+  }
+  .el-message-box {
+    &.confirm-del {
+      background: #32364a;
+      border: 1px solid #32364a;
+      color: #fff;
+      .el-message-box__message,
+      .el-message-box__close {
+        color: rgba(255, 255, 255, 0.7);
+      }
+    }
+  }
+  .el-popover.el-popper.host-list-poper {
+    background: #3f4358;
+    color: #fff;
+
+    .host-list-menu {
+      > li {
+        .el-dropdown {
+          color: #fff;
+        }
+        &:hover {
+          background: rgb(79, 82, 105);
+        }
+      }
+    }
+  }
+  .el-dialog {
+    &.host-link-dialog {
+      background: #1d2033;
+    }
+
+    &.host-edit {
+      background: #1d2033;
+
+      .nav {
+        background: #282b3d;
+      }
+
+      .main-wapper {
+        color: rgba(255, 255, 255, 0.7);
+
+        .main {
+          background: #32364a;
+        }
+
+        .input,
+        .input-textarea {
+          color: #fff;
+          &::-webkit-input-placeholder {
+            color: rgba(255, 255, 255, 0.7);
+          }
+        }
+        .input {
+          border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+
+          &:hover {
+            border-bottom: 2px solid rgba(255, 255, 255, 0.7);
+          }
+          &:focus {
+            border-bottom: 2px solid #01cc74;
+          }
+          &.error {
+            border-bottom: 2px solid #cc5441;
+          }
+        }
+        .input-textarea {
+          border: 1px solid rgba(255, 255, 255, 0.7);
+
+          &:hover {
+            border: 2px solid rgba(255, 255, 255, 0.7);
+          }
+          &:focus {
+            border: 2px solid #01cc74;
+          }
+          &.error {
+            border: 2px solid #cc5441;
+          }
+        }
+        .el-select {
+          &.error {
+            .el-input__wrapper {
+              border: 1px solid #cc5441;
+            }
+          }
+        }
+      }
+
+      &.custom-path {
+        .el-dialog__body {
+          .plant-title {
+            svg {
+              &:hover {
+                color: #fdab1f;
+              }
+            }
+          }
+          .path-choose .icon-block {
+            svg {
+              color: #fff;
+
+              &:hover {
+                color: #fdab1f;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .main-right-panel {
+    > .top-tab {
+      > li {
+        &:not(.no-hover):hover {
+          background-color: #3e4257;
+        }
+        &.active {
+          background: #3e4257;
+        }
+      }
+    }
+    >.main-block {
+      >.php-versions-list {
+        .http-serve-item {
+          background: #32364a;
+        }
+      }
+
+      >.setup-common {
+        .main {
+          background: #32364a;
+        }
+      }
+
+      >.setup-config {
+        .plant-title {
+          .add {
+            color: #fff;
+
+            &:hover {
+              color: #fdab1f;
+            }
+          }
+        }
+        .main {
+          background: #32364a;
+
+          .path-choose {
+            .input {
+              border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+              color: #fff;
+              &::-webkit-input-placeholder {
+                color: rgba(255, 255, 255, 0.7);
+              }
+              &:hover {
+                border-bottom: 2px solid rgba(255, 255, 255, 0.7);
+              }
+              &:focus {
+                border-bottom: 2px solid #01cc74;
+              }
+              &.error {
+                border-bottom: 2px solid #cc5441;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    >.http-serve-list {
+      .http-serve-item {
+        background: #32364a;
+
+        .left {
+          > .top {
+            > .value {
+              &:hover {
+                color: #fff;
+              }
+            }
+          }
+
+          > .bottom {
+            > .url {
+              color: #409eff;
+              &.empty {
+                color: #fff;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    >.tools-panel {
+      > li {
+        background: #32364a;
+      }
+    }
+  }
+  .app-chat {
+    .nav {
+      background: #282b3d;
+    }
+  }
+  .app-ai-tool {
+    background: #32364a;
+  }
+  .password-prompt {
+    background: #32364a !important;
+    border: 1px solid #32364a !important;
+    color: #fff !important;
+    .el-message-box__message,
+    .el-message-box__close {
+      color: rgba(255, 255, 255, 0.7) !important;
+    }
+  }
+  .about-dialog {
+    background: #1d2033;
+
+    .el-dialog__title,
+    .el-dialog__close {
+      color: #fff;
+    }
+  }
+  .about-panel {
+    .app-info {
+      .app-version span {
+        color: #fff;
+      }
+      .engine-info {
+        color: #fff;
+      }
+    }
+    .copyright {
+      a {
+        color: #fff;
+      }
+    }
+  }
+
+  .tools-system-env {
+    .main-wapper {
+
+      >.file {
+        background: #32364a;
+      }
+    }
+  }
+}
+
+@media (max-width: 1100px) {
+  html.dark {
+    #app {
+      #container {
+        .aside {
+          width: 45px;
+
+          .top-tool {
+            padding: 50px 0 12px 0;
+            justify-content: center;
+
+            >.el-tooltip__trigger {
+              display: none;
+            }
+          }
+
+          .menu {
+            padding: 0;
+
+            &::-webkit-scrollbar {
+              display: none;
+            }
+
+            >li {
+              padding: 0;
+
+              >.left {
+                justify-content: space-between;
+
+                .icon-block {
+                  width: 45px;
+                  justify-content: center;
+                }
+
+                >.title {
+                  display: none;
+                }
+              }
+
+              >.el-switch {
+                display: none;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

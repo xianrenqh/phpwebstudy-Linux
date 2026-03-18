@@ -1,0 +1,516 @@
+html.light {
+  --main-bg-color: #f1f2f3;
+  --base-bg-color: rgba(51, 68, 85, 0.35);
+  --base-bg-color-2: rgba(51, 68, 85, 0.2);
+  --base-bg-color-1: rgba(51, 68, 85, 0.15);
+
+  #app {
+    background: #fff;
+
+    #container {
+      background: #fff;
+
+      .aside {
+        background: var(--main-bg-color);
+        color: #345;
+
+        .top-tool {
+          svg {
+            &:hover {
+              color: #fdab1f;
+            }
+          }
+        }
+
+        .top-menu {
+          padding: 0 12px;
+
+          > li {
+            padding: 0 15px;
+            border-radius: 6px;
+
+            &:hover {
+              background-color: var(--base-bg-color-2);
+              backdrop-filter: blur(5px);
+            }
+
+            &.active {
+              background-color: var(--base-bg-color);
+              backdrop-filter: blur(5px);
+
+              svg {
+                color: #fff;
+              }
+            }
+          }
+
+          svg {
+            color: #345;
+          }
+
+          &::-webkit-scrollbar-thumb {
+            background-color: var(--base-bg-color-1);
+          }
+        }
+
+        .setup-menu {
+          border: none;
+          padding: 0 19px 8px 12px;
+
+          >li {
+            padding: 0 15px;
+            border-radius: 6px;
+
+            &:hover {
+              background-color: var(--base-bg-color-2);
+              backdrop-filter: blur(5px);
+            }
+
+            &.active {
+              background-color: var(--base-bg-color);
+              backdrop-filter: blur(5px);
+
+              svg {
+                color: #fff;
+              }
+            }
+          }
+
+          svg {
+            color: #345;
+          }
+        }
+      }
+
+      .main-right-panel {
+        background: var(--main-bg-color);
+        color: #345;
+
+        > .top-tab {
+          .el-button-group>.el-button:not(:last-child) {
+            margin-right: 0;
+          }
+
+          >li {
+            &:not(.no-hover):hover {
+              background-color: var(--base-bg-color-2);
+              backdrop-filter: blur(5px);
+            }
+            &.active {
+              background: var(--base-bg-color);
+              backdrop-filter: blur(5px);
+              color: #fff;
+            }
+          }
+        }
+
+        >.host-list {
+          .el-table__header {
+            thead {
+              tr {
+                background: #fff;
+                th.el-table__cell {
+                  background: #fff;
+                }
+              }
+            }
+          }
+        }
+
+        .php-versions-list {
+          &::-webkit-scrollbar-thumb {
+            background-color: var(--base-bg-color-1);
+          }
+          .http-serve-item {
+            background-color: var(--base-bg-color-1);
+            backdrop-filter: blur(5px);
+          }
+        }
+
+        >.main-block {
+          >.module-config {
+            >.block {
+              border: 1px solid var(--base-bg-color-2);
+            }
+          }
+
+          >.setup-common {
+            &::-webkit-scrollbar-thumb {
+              background-color: var(--base-bg-color-1);
+            }
+            .main {
+              background: var(--base-bg-color-1);
+              backdrop-filter: blur(5px);
+            }
+          }
+
+          >.setup-config {
+            .main {
+              background: var(--base-bg-color-1);
+              backdrop-filter: blur(5px);
+
+              .path-choose {
+                .input {
+                  color: #345;
+                  border-bottom: 1px solid rgba(51, 68, 85, 0.4);
+
+                  &::-webkit-input-placeholder {
+                    color: rgba(51, 68, 85, 0.7);
+                  }
+                  &:hover {
+                    border-bottom: 2px solid rgba(51, 68, 85, 0.4);
+                  }
+                  &:focus {
+                    border-bottom: 2px solid #01cc74;
+                  }
+                  &.error {
+                    border-bottom: 2px solid #cc5441;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        >.http-serve-list {
+          &::-webkit-scrollbar-thumb {
+            background-color: var(--base-bg-color-1);
+          }
+
+          > .empty {
+            > .wapper {
+              color: #345;
+            }
+          }
+
+          .http-serve-item {
+            background-color: var(--base-bg-color-1);
+            backdrop-filter: blur(5px);
+
+            .left {
+              > .top {
+                > .value {
+                  &:hover {
+                    color: #fdab1f;
+                  }
+                }
+              }
+
+              > .bottom {
+                > .url {
+                  color: #409eff;
+                  &.empty {
+                    color: #345;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        >.tools-panel {
+          > li {
+            background-color: var(--base-bg-color-1);
+            backdrop-filter: blur(5px);
+          }
+        }
+
+        &.dns-panel {
+          .top-tab {
+            svg {
+              color: #345;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .el-table {
+    --el-table-text-color: #345;
+  }
+
+  .el-popover.el-popper.host-list-poper {
+    background: rgba(51, 68, 85, 0.6);
+    backdrop-filter: blur(5px);
+
+    .host-list-menu {
+      > li {
+        .el-dropdown {
+          color: #fff;
+        }
+        &:hover {
+          background: rgba(51, 68, 85, 0.5);
+          backdrop-filter: blur(5px);
+        }
+      }
+    }
+  }
+
+  .el-dialog {
+    &.host-edit {
+      .main-wapper {
+
+        .main {
+          background: var(--base-bg-color-1);
+          backdrop-filter: blur(5px);
+
+          .input,
+          .input-textarea {
+            color: #345;
+            &::-webkit-input-placeholder {
+              color: rgba(51, 68, 85, 0.7);
+            }
+          }
+          .input {
+            border-bottom: 1px solid rgba(51, 68, 85, 0.4);
+
+            &:hover {
+              border-bottom: 2px solid rgba(51, 68, 85, 0.4);
+            }
+            &:focus {
+              border-bottom: 2px solid #01cc74;
+            }
+            &.error {
+              border-bottom: 2px solid #cc5441;
+            }
+          }
+          .input-textarea {
+            border: 1px solid rgba(51, 68, 85, 0.4);
+
+            &:hover {
+              border: 2px solid rgba(51, 68, 85, 0.4);
+            }
+            &:focus {
+              border: 2px solid #01cc74;
+            }
+          }
+        }
+      }
+
+      &.custom-path {
+        .el-dialog__body {
+          .plant-title {
+            svg {
+              &:hover {
+                color: #fdab1f;
+              }
+            }
+          }
+          .path-choose .icon-block {
+            svg {
+              color: #789;
+
+              &:hover {
+                color: #fdab1f;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .el-drawer .el-drawer__body {
+    background: #fff !important;
+    padding: 0 !important;
+
+    .host-vhost {
+      background: var(--main-bg-color);
+
+      .nav {
+        background: var(--main-bg-color);
+        height: 55px;
+      }
+
+      .main-wapper {
+        background: #fff;
+      }
+    }
+
+    .host-edit {
+      background: #fff;
+
+      .nav {
+        background: var(--main-bg-color);
+      }
+
+      .main-wapper {
+        color: #345;
+
+        .main {
+          background: var(--base-bg-color-1);
+          backdrop-filter: blur(5px);
+        }
+
+        .el-switch {
+          &:not(.is-checked) {
+            .el-switch__core {
+              background: #b4b6b8;
+              border-color: #b4b6b8;
+            }
+          }
+        }
+
+        .input,
+        .input-textarea {
+          color: #345;
+          &::-webkit-input-placeholder {
+            color: rgba(51, 68, 85, 0.7);
+          }
+        }
+        .input {
+          border-bottom: 1px solid rgba(51, 68, 85, 0.4);
+
+          &:hover {
+            border-bottom: 2px solid rgba(51, 68, 85, 0.4);
+          }
+          &:focus {
+            border-bottom: 2px solid #01cc74;
+          }
+          &.error {
+            border-bottom: 2px solid #cc5441;
+          }
+        }
+        .input-textarea {
+          border: 1px solid rgba(51, 68, 85, 0.4);
+
+          &:hover {
+            border: 2px solid rgba(51, 68, 85, 0.4);
+          }
+          &:focus {
+            border: 2px solid #01cc74;
+          }
+          &.error {
+            border: 2px solid #cc5441;
+          }
+        }
+        .el-select {
+          &.error {
+            .el-input__wrapper {
+              border: 1px solid #cc5441;
+            }
+          }
+        }
+      }
+
+      &.json-parse {
+        .main {
+          background: #fff;
+        }
+      }
+    }
+
+    .host-logs {
+      background: #fff;
+      > .top-tab {
+        > li {
+          &:hover {
+            background: var(--base-bg-color-2);
+            backdrop-filter: blur(5px);
+          }
+          &.active {
+            background: var(--base-bg-color);
+            backdrop-filter: blur(5px);
+            color: #fff;
+          }
+        }
+      }
+      > .block {
+        border: 1px solid var(--base-bg-color-2);
+      }
+    }
+
+    .tools-file-info {
+      .main-wapper {
+        .select-dir-wapper {
+          #selectDir {
+            border: 2px dashed #ccc;
+            color: #345;
+          }
+        }
+      }
+    }
+
+    .php-extensions {
+      .nav {
+        background: var(--main-bg-color);
+      }
+    }
+  }
+
+  .app-chat {
+    .nav {
+      background: #fff;
+    }
+  }
+  .app-ai-tool {
+    background: #fff;
+  }
+
+  .tools-system-env {
+    .main-wapper {
+
+      >.file {
+        background: var(--base-bg-color-1);
+      }
+    }
+  }
+
+  .app-el-message {
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--base-bg-color-1);
+    }
+  }
+}
+
+@media (max-width: 1100px) {
+  html.light {
+    #app {
+      #container {
+        .aside {
+          width: 45px;
+
+          .top-tool {
+            padding: 50px 0 12px 0;
+            justify-content: center;
+
+            >.el-tooltip__trigger {
+              display: none;
+            }
+          }
+
+          .menu {
+            padding: 0;
+
+            &::-webkit-scrollbar {
+              display: none;
+            }
+
+            >li {
+              padding: 0;
+              border-radius: 0;
+
+              >.left {
+                justify-content: space-between;
+
+                .icon-block {
+                  width: 45px;
+                  justify-content: center;
+                }
+
+                >.title {
+                  display: none;
+                }
+              }
+
+              >.el-switch {
+                display: none;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

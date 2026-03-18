@@ -1,0 +1,10 @@
+
+
+# 先安装依赖（如果没安装的话）
+npm install -g cross-env
+
+# 清理并构建
+rm -rf release
+rm -rf dist/*
+cat scripts/args.esbuild.app-builder | xargs npx esbuild
+npx cross-env NODE_ENV=production ARCH=amd64 node electron/app-builder.js
