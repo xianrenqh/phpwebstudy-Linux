@@ -38,6 +38,7 @@ echo ""
 echo "📦 步骤 3/5: 运行 electron-app-builder..."
 export NODE_ENV=production
 export ARCH=amd64
+export USE_SYSTEM_FPM=true  # 使用系统的 fpm 工具生成 .deb 包
 node electron/app-builder.js
 
 if [ $? -ne 0 ]; then

@@ -1,8 +1,12 @@
 
-
+# 方式 1：使用构建脚本（最详细，有进度提示）
+cd /mnt/works/www_vue/016phpwebstudy
 bash build-amd64-deb.sh 2>&1 | tail -80
 
-
-# 重新运行 app-builder 生成完整的包
+# 方式 2：使用 yarn 命令（最简洁）
 cd /mnt/works/www_vue/016phpwebstudy
-NODE_ENV=production node electron/app-builder.js 2>&1 | tail -10
+yarn run build:amd64:deb 2>&1 | tail -80
+
+# 方式 3：手动执行完整命令
+cd /mnt/works/www_vue/016phpwebstudy
+NODE_ENV=production ARCH=amd64-deb USE_SYSTEM_FPM=true node electron/app-builder.js 2>&1 | tail -80
