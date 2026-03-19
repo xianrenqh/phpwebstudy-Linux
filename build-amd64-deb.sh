@@ -21,7 +21,7 @@ echo ""
 echo "🔧 步骤 2/5: 编译源代码..."
 if command -v yarn &> /dev/null; then
   echo "使用 yarn 编译..."
-  cat scripts/args.esbuild.app-builder | xargs yarn run build-dev-runner 2>&1 | tail -5
+  cat scripts/args.esbuild.app-builder | xargs yarn run esbuild 2>&1 | tail -5
 else
   echo "使用 node_modules/.bin/esbuild 编译..."
   cat scripts/args.esbuild.app-builder | xargs node_modules/.bin/esbuild 2>&1 | tail -5

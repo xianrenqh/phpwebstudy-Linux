@@ -76,8 +76,9 @@ function logPrinter(data: string[]) {
 }
 
 function runElectronApp() {
-  const args = ['--inspect=5858', 'dist/electron/main.js']
-  electronProcess = spawn('electron', args)
+  const args = ['--inspect=5858', '--no-sandbox', 'dist/electron/main.js']
+  const electron = _path.join(__dirname, '../node_modules/.bin/electron')
+  electronProcess = spawn(electron, args)
   electronProcess?.stderr?.on('data', (data) => {
     logPrinter(data)
   })

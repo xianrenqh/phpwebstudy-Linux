@@ -14,3 +14,6 @@ yarn run clean
 cat scripts/args.esbuild.app-builder | xargs npx esbuild
 export USE_SYSTEM_FPM=true NODE_ENV=production ARCH=amd64-deb
 node electron/app-builder.js
+
+# 4：
+ yarn run build

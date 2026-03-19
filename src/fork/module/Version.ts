@@ -373,7 +373,7 @@ class Manager extends Base {
           })
         } else if (type === 'nginx') {
           const allSbinFile = await getAllFileAsync(join(base, 'sbin'), false)
-          const nginxBins = allSbinFile.filter((f) => f === 'nginx')
+          const nginxBins = allSbinFile.filter((f) => f.startsWith('nginx'))
           for (const binFile of nginxBins) {
             const bin = join(base, 'sbin', binFile)
             if (existsSync(bin)) {
