@@ -317,22 +317,45 @@
 
   const checkStatus = () => {
     if (props?.version?.version) {
-      let pkconfig = props?.version?.phpConfig ?? join(props?.version?.path, 'bin/php-config')
-      execAsync(pkconfig, ['--extension-dir']).then((res: string) => {
-        installExtensionDir.value = res
-        let all = getAllFile(installExtensionDir.value, false)
-        all = all.filter((s) => {
-          return s.indexOf('.so') >= 0 || s.indexOf('.dar') >= 0
+      // apt 系统使用 php -i 获取扩展目录
+      if (props.version?.flag === 'apt' || global.Server.SystemPackger === 'apt') {
+        const phpBin = props.version.phpBin || `/usr/bin/php${props.version.version}`
+        execAsync(phpBin, ['-i']).then((res: string) => {
+          // 从 php -i 输出中提取 extension_dir
+          const match = res.match(/extension_dir\s+=>\s+([^=]+)\s+=>/)
+          if (match) {
+            installExtensionDir.value = match[1].trim()
+            updateExtensionStatus()
+          }
+          taskStore.php.extendRefreshing = false
+        }).catch(() => {
+          taskStore.php.extendRefreshing = false
         })
-        let k: 'phpwebstudy' | 'macports' | 'homebrew'
-        for (k in showTableData.value) {
-          showTableData.value[k].forEach((item: any) => {
-            item.installed = all.indexOf(item.soname) >= 0
-            item.status = item.installed
-            item.soPath = join(installExtensionDir.value, item.soname)
-          })
-        }
-        taskStore.php.extendRefreshing = false
+      } else {
+        // macOS/Homebrew 使用 php-config
+        let pkconfig = props?.version?.phpConfig ?? join(props?.version?.path, 'bin/php-config')
+        execAsync(pkconfig, ['--extension-dir']).then((res: string) => {
+          installExtensionDir.value = res
+          updateExtensionStatus()
+          taskStore.php.extendRefreshing = false
+        }).catch(() => {
+          taskStore.php.extendRefreshing = false
+        })
+      }
+    }
+  }
+
+  const updateExtensionStatus = () => {
+    let all = getAllFile(installExtensionDir.value, false)
+    all = all.filter((s) => {
+      return s.indexOf('.so') >= 0 || s.indexOf('.dar') >= 0
+    })
+    let k: 'phpwebstudy' | 'macports' | 'homebrew' | 'apt'
+    for (k in showTableData.value) {
+      showTableData.value[k].forEach((item: any) => {
+        item.installed = all.indexOf(item.soname) >= 0
+        item.status = item.installed
+        item.soPath = join(installExtensionDir.value, item.soname)
       })
     }
   }
@@ -449,24 +472,47 @@
     })
       .then(() => {
         console.log('row: ', row)
-        const soPath = row?.soPath
-        if (soPath && existsSync(soPath)) {
-          IPC.send('app-fork:php', 'unInstallExtends', soPath).then((key: string, res: any) => {
+        // apt 系统使用 libName 进行卸载
+        if (row.flag === 'apt' && row.libName) {
+          IPC.send('app-fork:php', 'unInstallExtends', {
+            libName: row.libName,
+            flag: row.flag
+          }).then((key: string, res: any) => {
             IPC.off(key)
             if (res.code === 0) {
-              let k: 'phpwebstudy' | 'macports' | 'homebrew'
+              let k: 'phpwebstudy' | 'macports' | 'homebrew' | 'apt'
               for (k in showTableData.value) {
-                const find: any = showTableData.value[k].find((f: any) => f?.soPath === soPath)
+                const find: any = showTableData.value[k].find((f: any) => f.name === row.name)
                 if (find) {
                   find.installed = false
                   find.status = false
-                  delete find?.soPath
                 }
               }
             } else if (res.code === 1) {
               MessageError(res?.msg ?? I18nT('base.fail'))
             }
           })
+        } else {
+          // macOS 或其他方式使用 soPath 删除
+          const soPath = row?.soPath
+          if (soPath && existsSync(soPath)) {
+            IPC.send('app-fork:php', 'unInstallExtends', soPath).then((key: string, res: any) => {
+              IPC.off(key)
+              if (res.code === 0) {
+                let k: 'phpwebstudy' | 'macports' | 'homebrew'
+                for (k in showTableData.value) {
+                  const find: any = showTableData.value[k].find((f: any) => f?.soPath === soPath)
+                  if (find) {
+                    find.installed = false
+                    find.status = false
+                    delete find?.soPath
+                  }
+                }
+              } else if (res.code === 1) {
+                MessageError(res?.msg ?? I18nT('base.fail'))
+              }
+            })
+          }
         }
       })
       .catch(() => {})

@@ -161,6 +161,19 @@ class Php extends Base {
         }
         return
       }
+      // apt 系统 (Ubuntu/Debian) 使用 apt install 安装扩展
+      if (args?.flag === 'apt') {
+        try {
+          const command = `echo '${global.Server.Password}' | sudo -S apt install -y ${args.libName}`
+          console.log('apt install extension: ', command)
+          on(`Installing extension: ${args.libName}`)
+          await execPromise(command).on(on)
+          resolve(0)
+        } catch (e) {
+          reject(e)
+        }
+        return
+      }
       try {
         await this._doInstallExtends(version, versionNumber, extend, installExtensionDir).on(on)
         let name = `${extend}.so`
@@ -179,11 +192,22 @@ class Php extends Base {
     })
   }
 
-  unInstallExtends(soPath: string) {
+  unInstallExtends(args: any) {
     return new ForkPromise(async (resolve, reject) => {
       try {
-        if (existsSync(soPath)) {
-          await execPromise(`echo '${global.Server.Password}' | sudo -S rm -rf ${soPath}`)
+        // apt 系统使用 apt remove 卸载扩展
+        if (typeof args === 'object' && args.flag === 'apt' && args.libName) {
+          const command = `echo '${global.Server.Password}' | sudo -S apt remove -y --purge ${args.libName}`
+          console.log('apt remove extension: ', command)
+          await execPromise(command)
+          resolve(true)
+        } else {
+          // macOS 或其他方式直接删除 so 文件
+          const soPath = args as string
+          if (existsSync(soPath)) {
+            await execPromise(`echo '${global.Server.Password}' | sudo -S rm -rf ${soPath}`)
+          }
+          resolve(true)
         }
       } catch (e) {
         reject(e)

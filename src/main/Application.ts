@@ -284,9 +284,16 @@ export default class Application extends EventEmitter {
     this.windowManager.on('window-moved', (data) => {
       this.storeWindowState(data)
     })
+    // 只有真正关闭窗口时才触发退出（隐藏窗口不会触发）
     this.windowManager.on('window-closed', (data) => {
       this.storeWindowState(data)
-      this.emit('application:exit')
+      // 检查是否所有窗口都已关闭，如果是则退出应用
+      const windows = this.windowManager.getWindows()
+      if (!windows || Object.keys(windows).length === 0) {
+        // 所有窗口都关闭了，可以选择退出或保持后台运行
+        // 这里选择不退出，保持托盘图标和后台服务
+        logger.info('[PhpWebStudy] All windows closed, keeping app running in background')
+      }
     })
   }
 
@@ -599,7 +606,13 @@ export default class Application extends EventEmitter {
         this.windowManager.sendCommandTo(this.mainWindow!, command, command, ...args)
         break
       case 'Application:APP-Close':
-        this.windowManager?.getFocusedWindow()?.close()
+        // 点击关闭按钮时只隐藏窗口，不退出进程
+        const win = this.windowManager?.getFocusedWindow()
+        if (win) {
+          win.hide()
+          // 阻止窗口关闭事件触发 application:exit
+          return
+        }
         break
       case 'application:open-dev-window':
         this.mainWindow?.webContents?.openDevTools()

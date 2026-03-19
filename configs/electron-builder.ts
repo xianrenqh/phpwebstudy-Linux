@@ -26,13 +26,16 @@ const conf: Configuration = {
     target: [
       {
         target: 'deb',
-        arch: ['x64', 'arm64']
-      },
-      {
-        target: 'rpm',
-        arch: ['x64', 'arm64']
+        arch: ['x64']
       }
-    ]
+    ],
+    desktop: {
+      Name: 'PhpWebStudy',
+      Comment: 'Powerful Web and PHP Development Environment'
+    }
+  },
+  deb: {
+    packageName: 'phpwebstudy'
   }
 }
 

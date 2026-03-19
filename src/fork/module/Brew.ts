@@ -174,61 +174,62 @@ class Brew extends Base {
       let params: string[] = []
       if (flag === 'apache') {
         if (global.Server.SystemPackger === 'apt') {
-          params = ['show', 'apache2']
+          params = ['show', '-a', 'apache2']
         } else {
           params = ['info', 'httpd']
         }
       } else if (flag === 'nginx') {
         if (global.Server.SystemPackger === 'apt') {
-          params = ['show', 'nginx']
+          params = ['show', '-a', 'nginx']
         } else {
           params = ['info', 'nginx']
         }
       } else if (flag === 'caddy') {
         if (global.Server.SystemPackger === 'apt') {
-          params = ['show', 'caddy']
+          params = ['show', '-a', 'caddy']
         } else {
           params = ['info', 'caddy']
         }
       } else if (flag === 'php') {
         if (global.Server.SystemPackger === 'apt') {
-          params = ['search', 'php.*-fpm']
+          // 使用 apt-cache search 代替 apt list，速度更快更稳定
+          params = ['search', '^php[0-9].*-fpm$']
         } else {
           params = ['search', `PHP FastCGI Process Manager`]
         }
       } else if (flag === 'mysql') {
         if (global.Server.SystemPackger === 'apt') {
-          params = ['show', 'mysql-server']
+          params = ['show', '-a', 'mysql-server']
         } else {
           params = ['info', 'community-mysql-server']
         }
       } else if (flag === 'mariadb') {
         if (global.Server.SystemPackger === 'apt') {
-          params = ['show', 'mariadb-server']
+          params = ['show', '-a', 'mariadb-server']
         } else {
           params = ['info', 'mariadb-server']
         }
       } else if (flag === 'postgresql') {
         if (global.Server.SystemPackger === 'apt') {
-          params = ['show', 'postgresql']
+          params = ['show', '-a', 'postgresql']
         } else {
           params = ['info', 'postgresql-server']
         }
       } else if (flag === 'memcached') {
         if (global.Server.SystemPackger === 'apt') {
-          params = ['show', 'memcached']
+          params = ['show', '-a', 'memcached']
         } else {
           params = ['info', 'memcached']
         }
       } else if (flag === 'redis') {
         if (global.Server.SystemPackger === 'apt') {
-          params = ['show', 'redis']
+          params = ['show', '-a', 'redis']
         } else {
           params = ['info', 'redis']
         }
       } else if (flag === 'pure-ftpd') {
         if (global.Server.SystemPackger === 'apt') {
-          params = ['show', 'pure-ftpd']
+          params = ['show', '-a', 'pure-ftpd']
         } else {
           params = ['info', 'pure-ftpd']
         }
@@ -251,7 +252,10 @@ class Brew extends Base {
           ].includes(flag)
         ) {
           // 过滤掉警告信息
-          const cleanInfo = info.split('\n').filter(line => !line.startsWith('WARNING')).join('\n')
+          const cleanInfo = info
+            .split('\n')
+            .filter((line) => !line.startsWith('WARNING'))
+            .join('\n')
           const reg = /(Package: )(.*?)\n([\s\S]*?)(Version: )(.*?)\n/g
           const vd: { [k: string]: string } = {}
           let r
@@ -306,11 +310,12 @@ class Brew extends Base {
             arr.push(item)
           }
         } else if (flag === 'php') {
-          // 使用 apt-cache search 输出格式解析：包名 - 描述
+          // 使用 apt-cache search 输出格式解析
+          const vd: { [k: string]: string } = {}
           const lines = info.split('\n').filter((line) => line.trim())
           for (const line of lines) {
             // 匹配格式：phpX.Y-fpm - description
-            const match = line.match(/^(php[\d.]*-fpm)\s+-\s+(.*)$/)
+            const match = line.match(/(php[\d.]+-fpm)\s+-\s+/)
             if (match) {
               const packName = match[1]
               const versionMatch = packName.match(/php([\d.]+)/)
@@ -643,7 +648,23 @@ class Brew extends Base {
           let numStr = ''
           if (version.phpBin) {
             // 从 phpBin 路径提取，如 /usr/bin/php8.1 -> php8.1
-            numStr = version.phpBin.split('/').pop()!
+            const binName = version.phpBin.split('/').pop()!
+            // 处理格式：php-fpm8.3 -> php8.3, php8.1-fpm -> php8.1, php8.3 -> php8.3
+            // 先尝试匹配 php-fpmX.Y 格式
+            const matchFpmFirst = binName.match(/^php-fpm(\d+\.\d+)$/)
+            if (matchFpmFirst) {
+              numStr = `php${matchFpmFirst[1]}`
+            } else {
+              // 再尝试匹配 phpX.Y-fpm 格式
+              const match = binName.match(/^(php(?:\d+\.\d+))(?:-fpm)?$/)
+              if (match) {
+                numStr = match[1]
+              } else {
+                // 如果不是标准格式，尝试直接提取 php+数字
+                const simpleMatch = binName.match(/php\d+\.\d+/)
+                numStr = simpleMatch ? simpleMatch[0] : binName
+              }
+            }
           } else if (version.version) {
             // 从 version 字段构造，如 8.1 -> php8.1
             const verParts = version.version.split('.')
@@ -651,18 +672,18 @@ class Brew extends Base {
               numStr = `php${verParts[0]}.${verParts[1]}`
             }
           }
-          
+
           if (!numStr) {
             reject(new Error('无法获取 PHP 版本号'))
             return
           }
-          
-          // 使用 apt-cache search 获得更稳定的输出
-          const command = `apt-cache search "^${numStr}-"`
-          console.log('command: ', command)
+
+          // 使用 apt-cache search 获得更稳定的输出，并过滤出 PECL 扩展
+          const command = `apt-cache search "^${numStr}-" | grep -iE "(pecl|extension|module)"`
+          console.log('apt extension command: ', command)
           let res: any = await execPromise(command)
           res = res?.stdout.toString() ?? ''
-          
+
           const arr = res
             .split('\n')
             .filter((f: string) => {
@@ -680,7 +701,7 @@ class Brew extends Base {
                 installed: false,
                 status: false,
                 soname: names[name] ?? `${name}.so`,
-                flag: 'macports'
+                flag: 'apt'
               }
               if (zend.includes(name)) {
                 item['extendPre'] = 'zend_extension='

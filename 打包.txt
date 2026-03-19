@@ -1,10 +1,8 @@
 
 
-# 先安装依赖（如果没安装的话）
-npm install -g cross-env
+bash build-amd64-deb.sh 2>&1 | tail -80
 
-# 清理并构建
-rm -rf release
-rm -rf dist/*
-cat scripts/args.esbuild.app-builder | xargs npx esbuild
-npx cross-env NODE_ENV=production ARCH=amd64 node electron/app-builder.js
+
+# 重新运行 app-builder 生成完整的包
+cd /mnt/works/www_vue/016phpwebstudy
+NODE_ENV=production node electron/app-builder.js 2>&1 | tail -10

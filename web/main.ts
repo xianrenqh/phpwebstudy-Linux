@@ -13,7 +13,8 @@ window.global = {
   Date: window.Date,
   Server: {
     MacPorts: '',
-    BrewCellar: ''
+    BrewCellar: '',
+    SystemPackger: 'apt'
   }
 }
 

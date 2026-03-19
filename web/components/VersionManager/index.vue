@@ -7,7 +7,15 @@
           <template v-if="!brewRunning && !showNextBtn">
             <el-select v-model="libSrc" style="margin-left: 8px" :disabled="currentType.getListing">
               <el-option :disabled="!checkBrew()" value="brew" label="Homebrew"></el-option>
-              <el-option :disabled="!checkPort()" value="port" label="MacPorts"></el-option>
+              <template v-if="typeFlag !== 'caddy'">
+                <el-option value="port" :label="systemPackger"></el-option>
+              </template>
+              <template v-if="typeFlag === 'php'">
+                <el-option value="static" label="static-php"></el-option>
+              </template>
+              <template v-else-if="typeFlag === 'caddy'">
+                <el-option value="static" label="static-caddy"></el-option>
+              </template>
             </el-select>
           </template>
         </div>
@@ -79,10 +87,21 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, ComputedRef, nextTick, ref, watch } from 'vue'
+  import { computed, type ComputedRef, nextTick, reactive, ref, watch } from 'vue'
+  import { brewInfo, fetchVerion, portInfo } from '../../util/Brew'
+  import IPC from '../../util/IPC'
+  import XTerm from '../../util/XTerm'
+  import { chmod } from '@shared/file'
+  import { AppStore } from '../../store/app'
   import { AppSoftInstalledItem, BrewStore } from '../../store/brew'
   import { I18nT } from '@shared/lang'
+  import installedVersions from '../../util/InstalledVersions'
+  import Base from '../../core/Base'
+  import { MessageSuccess, MessageError } from '../../util/Element'
   import { waitTime } from '../../fn'
+  const { join } = require('path')
+  const { existsSync, unlinkSync, copyFileSync, readFileSync, writeFileSync } = require('fs')
+  const { removeSync } = require('fs-extra')
 
   const props = defineProps<{
     typeFlag:
@@ -102,6 +121,7 @@
   const logs = ref()
 
   const brewStore = BrewStore()
+  const appStore = AppStore()
 
   const cardHeadTitle = computed(() => {
     return brewStore.cardHeadTitle
@@ -119,6 +139,13 @@
     return brewStore?.[props.typeFlag] as any
   })
 
+  const typeFlag = computed(() => {
+    return props.typeFlag
+  })
+  const systemPackger = computed(() => {
+    return global.Server.SystemPackger === 'apt' ? 'APT' : 'DNF'
+  })
+
   const libSrc = computed({
     get() {
       return (
@@ -126,20 +153,17 @@
         (checkBrew() ? 'brew' : checkPort() ? 'port' : undefined)
       )
     },
-    set(v: 'brew' | 'port') {
+    set(v: 'brew' | 'port' | 'static') {
       brewStore.LibUse[props.typeFlag] = v
     }
   })
 
   const tableData = computed(() => {
-    const arr = []
-    let list: any
-    if (libSrc.value === 'brew') {
-      list = currentType.value.list.homebrew
-    } else {
-      list = currentType.value.list.macports
+    if (!libSrc?.value) {
+      return []
     }
-    console.log('list: ', list)
+    const arr = []
+    const list = currentType.value.list?.[libSrc.value]
     for (const name in list) {
       const value = list[name]
       const nums = value.version.split('.').map((n: string, i: number) => {
@@ -156,13 +180,14 @@
         return n
       })
       const num = parseInt(nums.join(''))
-      arr.push({
+      Object.assign(value, {
         name,
         version: value.version,
         installed: value.installed,
         num,
         flag: value.flag
       })
+      arr.push(value)
     }
     arr.sort((a, b) => {
       return b.num - a.num
@@ -177,14 +202,94 @@
   })
 
   const checkBrew = () => {
-    return true
+    return !!global.Server.BrewCellar
   }
   const checkPort = () => {
-    return true
+    return !!global.Server.MacPorts
   }
 
-  const getData = () => {}
+  let fetchFlag: Set<string> = new Set()
+  const fetchData = (src: 'brew' | 'port' | 'static') => {
+    fetchFlag.add(src)
+    const currentItem = currentType.value
+    const list = currentItem.list?.[src] ?? {}
+    let getInfo: Promise<any>
+    if (src === 'brew') {
+      getInfo = brewInfo(props.typeFlag)
+    } else if (src === 'port') {
+      getInfo = portInfo(props.typeFlag)
+    } else {
+      getInfo = fetchVerion(props.typeFlag)
+    }
+    getInfo
+      .then((res: any) => {
+        for (const k in list) {
+          delete list?.[k]
+        }
+        for (const name in res) {
+          list[name] = reactive(res[name])
+        }
+        if (src === libSrc.value) {
+          currentItem.getListing = false
+        }
+        fetchFlag.delete(src)
+      })
+      .catch(() => {
+        if (src === libSrc.value) {
+          currentItem.getListing = false
+        }
+        fetchFlag.delete(src)
+      })
+  }
+  const getData = () => {
+    const currentItem = currentType.value
+    const src = libSrc?.value
+    if (brewRunning?.value || !src || fetchFlag.has(src)) {
+      return
+    }
+    const list = currentItem.list?.[src]
+    if (Object.keys(list).length === 0) {
+      currentItem.getListing = true
+      if (props.typeFlag === 'php') {
+        if (src === 'brew' && !appStore?.config?.setup?.phpBrewInited) {
+          IPC.send('app-fork:brew', 'addTap', 'shivammathur/php').then((key: string, res: any) => {
+            IPC.off(key)
+            if (res?.data === 2) {
+              appStore.config.setup.phpBrewInited = true
+              appStore.saveConfig()
+              fetchData('brew')
+            }
+          })
+        } else if (src === 'port' && !appStore?.config?.setup?.phpAptInited) {
+          const fn = global.Server.SystemPackger === 'apt' ? 'initPhpApt' : 'initPhpDnf'
+          IPC.send('app-fork:brew', fn).then((key: string) => {
+            IPC.off(key)
+            appStore.config.setup.phpAptInited = true
+            appStore.saveConfig()
+            fetchData('port')
+          })
+        }
+      } else if (props.typeFlag === 'mongodb') {
+        if (src === 'brew') {
+          IPC.send('app-fork:brew', 'addTap', 'mongodb/brew').then((key: string, res: any) => {
+            IPC.off(key)
+            if (res?.data === 2) {
+              fetchData('brew')
+            }
+          })
+        }
+      }
+      fetchData(src)
+    }
+  }
   const reGetData = () => {
+    if (!libSrc?.value) {
+      return
+    }
+    const list = currentType.value.list?.[libSrc.value]
+    for (let k in list) {
+      delete list[k]
+    }
     getData()
   }
 
